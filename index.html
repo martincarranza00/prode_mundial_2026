@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Prode Mundial 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --verde:   #0B5394;
+    --verde2:  #1a6bb5;
+    --gold:    #f4c430;
+    --gold2:   #e6a800;
+    --blanco:  #f8f8f2;
+    --gris:    #2a2a2a;
+    --gris2:   #3d3d3d;
+    --gris3:   #555;
+    --error:   #e63946;
+    --radio:   8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--gris);
+    color: var(--blanco);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--verde);
+    padding: 24px 20px 20px;
+    text-align: center;
+    border-bottom: 3px solid var(--gold);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 3px;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  header p {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.65);
+    margin-top: 4px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* ── PROGRESS BAR ── */
+  .progress-wrap {
+    background: var(--verde);
+    padding: 8px 20px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .progress-bar-bg {
+    background: rgba(255,255,255,0.12);
+    border-radius: 99px;
+    height: 5px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    background: var(--gold);
+    height: 100%;
+    border-radius: 99px;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+  .progress-label {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.5);
+    text-align: right;
+    margin-top: 4px;
+  }
+
+  /* ── CONTAINER ── */
+  .container {
+    max-width: 540px;
+    margin: 0 auto;
+    padding: 20px 16px 40px;
+  }
+
+  /* ── DATOS PERSONALES ── */
+  .card {
+    background: var(--gris2);
+    border-radius: var(--radio);
+    padding: 18px 16px;
+    margin-bottom: 16px;
+    border: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .card-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    color: var(--gold);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(244,196,48,0.25);
+  }
+
+  .field {
+    margin-bottom: 12px;
+  }
+  .field label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 6px;
+  }
+  .field input[type="text"],
+  .field input[type="tel"] {
+    width: 100%;
+    background: var(--gris);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 6px;
+    padding: 11px 14px;
+    color: var(--blanco);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .field input:focus {
+    border-color: var(--gold);
+  }
+  .field input.invalid {
+    border-color: var(--error);
+  }
+
+  /* ── GRUPO ── */
+  .grupo-card {
+    background: var(--gris2);
+    border-radius: var(--radio);
+    margin-bottom: 16px;
+    border: 1px solid rgba(255,255,255,0.07);
+    overflow: hidden;
+  }
+
+  .grupo-header {
+    background: var(--verde);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .grupo-nombre {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    color: var(--gold);
+  }
+
+  .grupo-equipos {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.5);
+    margin-top: 1px;
+  }
+
+  .grupo-pts {
+    font-size: 0.65rem;
+    background: rgba(244,196,48,0.15);
+    color: var(--gold);
+    border-radius: 99px;
+    padding: 2px 8px;
+    white-space: nowrap;
+  }
+
+  /* ── FECHA LABEL ── */
+  .fecha-sep {
+    padding: 6px 16px 4px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: rgba(255,255,255,0.3);
+    background: rgba(0,0,0,0.15);
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+
+  /* ── PARTIDO ── */
+  .partido {
+    padding: 10px 16px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .partido-fecha {
+    grid-column: 1 / -1;
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.3);
+    margin-bottom: 4px;
+  }
+
+  .equipo {
+    font-size: 0.82rem;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+  .equipo-local  { text-align: right; }
+  .equipo-visita { text-align: left; }
+
+  .marcador {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: center;
+  }
+
+  .gol-input {
+    width: 42px;
+    height: 42px;
+    background: var(--gris);
+    border: 1.5px solid rgba(255,255,255,0.18);
+    border-radius: 6px;
+    color: var(--blanco);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    text-align: center;
+    outline: none;
+    -moz-appearance: textfield;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .gol-input::-webkit-outer-spin-button,
+  .gol-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .gol-input:focus {
+    border-color: var(--gold);
+    background: #1a1a1a;
+  }
+  .gol-input.filled {
+    border-color: var(--verde2);
+    background: rgba(45,106,79,0.2);
+  }
+  .gol-input.invalid {
+    border-color: var(--error);
+  }
+
+  .vs {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.25);
+    letter-spacing: 1px;
+  }
+
+  /* ── SUBMIT ── */
+  .submit-wrap {
+    position: sticky;
+    bottom: 0;
+    background: linear-gradient(to top, var(--gris) 70%, transparent);
+    padding: 20px 0 16px;
+    text-align: center;
+  }
+
+  .btn-enviar {
+    background: var(--gold);
+    color: var(--gris);
+    border: none;
+    border-radius: 10px;
+    padding: 16px 48px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    letter-spacing: 2px;
+    cursor: pointer;
+    width: 100%;
+    max-width: 360px;
+    transition: background 0.2s, transform 0.1s;
+    box-shadow: 0 4px 20px rgba(244,196,48,0.25);
+  }
+  .btn-enviar:active { transform: scale(0.98); }
+  .btn-enviar:disabled {
+    background: var(--gris3);
+    color: rgba(255,255,255,0.3);
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  .hint-enviar {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.3);
+    margin-top: 8px;
+  }
+
+  /* ── TOAST / ESTADOS ── */
+  #toast {
+    position: fixed;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--error);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 99px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 999;
+  }
+  #toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  #toast.success { background: var(--verde2); }
+
+  /* ── PANTALLA DE ÉXITO ── */
+  #pantalla-exito {
+    display: none;
+    text-align: center;
+    padding: 60px 20px;
+  }
+  #pantalla-exito .check {
+    font-size: 4rem;
+    margin-bottom: 16px;
+  }
+  #pantalla-exito h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    color: var(--gold);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+  #pantalla-exito p {
+    color: rgba(255,255,255,0.55);
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Prode Mundial 2026</h1>
+  <p>Fase de Grupos · 72 partidos</p>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-bar-bg">
+    <div class="progress-bar-fill" id="progressFill"></div>
+  </div>
+  <div class="progress-label" id="progressLabel">0 / 72 partidos completados</div>
+</div>
+
+<div class="container">
+
+  <!-- Pantalla éxito -->
+  <div id="pantalla-exito">
+    <div class="check">⚽</div>
+    <h2>¡Prode enviado!</h2>
+    <p>Tus pronósticos fueron registrados.<br>Buena suerte en el torneo.</p>
+  </div>
+
+  <!-- Formulario -->
+  <div id="form-wrap">
+
+    <div class="card">
+      <div class="card-title">Tus datos</div>
+      <div class="field">
+        <label>Nombre completo</label>
+        <input type="text" id="nombre" placeholder="Ej: Juan Pérez" autocomplete="name">
+      </div>
+      <div class="field">
+        <label>Teléfono (WhatsApp)</label>
+        <input type="tel" id="telefono" placeholder="Ej: 1155443322" autocomplete="tel">
+      </div>
+    </div>
+
+    <div id="grupos-container"></div>
+
+    <div class="submit-wrap">
+      <button class="btn-enviar" id="btnEnviar" onclick="enviarProde()">Enviar pronósticos</button>
+      <div class="hint-enviar">Completá todos los partidos antes de enviar</div>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ─────────────────────────────────────────
+// CONFIGURACIÓN — pegá aquí la URL de tu Apps Script Web App
+// ─────────────────────────────────────────
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz2mz8L-RIB3XNTWhw3hWweGRRBWVIrJ1p-yAYXvPJwzNzhO9FaRSJEGX0qLhFoccBq/exec';
+
+// ─────────────────────────────────────────
+// DATOS DE PARTIDOS
+// ─────────────────────────────────────────
+const GRUPOS = [
+  { nombre: 'Grupo A', equipos: 'Mexico · Corea del Sur · Rep. Checa · Sudafrica',
+    partidos: [
+      { f:'F1', d:'11/jun', l:'Mexico',        v:'Sudafrica' },
+      { f:'F1', d:'11/jun', l:'Corea del Sur', v:'Rep. Checa' },
+      { f:'F2', d:'18/jun', l:'Rep. Checa',    v:'Sudafrica' },
+      { f:'F2', d:'18/jun', l:'Mexico',        v:'Corea del Sur' },
+      { f:'F3', d:'24/jun', l:'Rep. Checa',    v:'Mexico' },
+      { f:'F3', d:'24/jun', l:'Sudafrica',     v:'Corea del Sur' },
+    ]
+  },
+  { nombre: 'Grupo B', equipos: 'Canada · Bosnia-Herz. · Qatar · Suiza',
+    partidos: [
+      { f:'F1', d:'12/jun', l:'Canada',       v:'Bosnia-Herz.' },
+      { f:'F1', d:'13/jun', l:'Qatar',        v:'Suiza' },
+      { f:'F2', d:'18/jun', l:'Suiza',        v:'Bosnia-Herz.' },
+      { f:'F2', d:'18/jun', l:'Canada',       v:'Qatar' },
+      { f:'F3', d:'24/jun', l:'Suiza',        v:'Canada' },
+      { f:'F3', d:'24/jun', l:'Bosnia-Herz.', v:'Qatar' },
+    ]
+  },
+  { nombre: 'Grupo C', equipos: 'Brasil · Marruecos · Haiti · Escocia',
+    partidos: [
+      { f:'F1', d:'13/jun', l:'Brasil',    v:'Marruecos' },
+      { f:'F1', d:'13/jun', l:'Haiti',     v:'Escocia' },
+      { f:'F2', d:'19/jun', l:'Escocia',   v:'Marruecos' },
+      { f:'F2', d:'19/jun', l:'Brasil',    v:'Haiti' },
+      { f:'F3', d:'24/jun', l:'Escocia',   v:'Brasil' },
+      { f:'F3', d:'26/jun', l:'Marruecos', v:'Haiti' },
+    ]
+  },
+  { nombre: 'Grupo D', equipos: 'Estados Unidos · Paraguay · Australia · Turquia',
+    partidos: [
+      { f:'F1', d:'12/jun', l:'Estados Unidos', v:'Paraguay' },
+      { f:'F1', d:'13/jun', l:'Australia',      v:'Turquia' },
+      { f:'F2', d:'19/jun', l:'Turquia',        v:'Paraguay' },
+      { f:'F2', d:'19/jun', l:'Estados Unidos', v:'Australia' },
+      { f:'F3', d:'25/jun', l:'Turquia',        v:'Estados Unidos' },
+      { f:'F3', d:'25/jun', l:'Paraguay',       v:'Australia' },
+    ]
+  },
+  { nombre: 'Grupo E', equipos: 'Alemania · Curazao · Costa de Marfil · Ecuador',
+    partidos: [
+      { f:'F1', d:'14/jun', l:'Alemania',       v:'Curazao' },
+      { f:'F1', d:'14/jun', l:'Costa de Marfil',v:'Ecuador' },
+      { f:'F2', d:'20/jun', l:'Alemania',       v:'Costa de Marfil' },
+      { f:'F2', d:'20/jun', l:'Curazao',        v:'Ecuador' },
+      { f:'F3', d:'25/jun', l:'Ecuador',        v:'Alemania' },
+      { f:'F3', d:'25/jun', l:'Curazao',        v:'Costa de Marfil' },
+    ]
+  },
+  { nombre: 'Grupo F', equipos: 'Paises Bajos · Japon · Suecia · Tunez',
+    partidos: [
+      { f:'F1', d:'14/jun', l:'Paises Bajos', v:'Japon' },
+      { f:'F1', d:'14/jun', l:'Suecia',       v:'Tunez' },
+      { f:'F2', d:'20/jun', l:'Paises Bajos', v:'Suecia' },
+      { f:'F2', d:'20/jun', l:'Tunez',        v:'Japon' },
+      { f:'F3', d:'25/jun', l:'Japon',        v:'Suecia' },
+      { f:'F3', d:'25/jun', l:'Tunez',        v:'Paises Bajos' },
+    ]
+  },
+  { nombre: 'Grupo G', equipos: 'Belgica · Egipto · Iran · Nueva Zelanda',
+    partidos: [
+      { f:'F1', d:'15/jun', l:'Iran',          v:'Nueva Zelanda' },
+      { f:'F1', d:'15/jun', l:'Belgica',       v:'Egipto' },
+      { f:'F2', d:'21/jun', l:'Belgica',       v:'Iran' },
+      { f:'F2', d:'21/jun', l:'Nueva Zelanda', v:'Egipto' },
+      { f:'F3', d:'26/jun', l:'Egipto',        v:'Iran' },
+      { f:'F3', d:'26/jun', l:'Nueva Zelanda', v:'Belgica' },
+    ]
+  },
+  { nombre: 'Grupo H', equipos: 'España · Cabo Verde · Arabia Saudita · Uruguay',
+    partidos: [
+      { f:'F1', d:'15/jun', l:'España',         v:'Cabo Verde' },
+      { f:'F1', d:'15/jun', l:'Arabia Saudita', v:'Uruguay' },
+      { f:'F2', d:'21/jun', l:'España',         v:'Arabia Saudita' },
+      { f:'F2', d:'21/jun', l:'Uruguay',        v:'Cabo Verde' },
+      { f:'F3', d:'26/jun', l:'Cabo Verde',     v:'Arabia Saudita' },
+      { f:'F3', d:'26/jun', l:'Uruguay',        v:'España' },
+    ]
+  },
+  { nombre: 'Grupo I', equipos: 'Francia · Senegal · Noruega · Irak',
+    partidos: [
+      { f:'F1', d:'16/jun', l:'Francia', v:'Senegal' },
+      { f:'F1', d:'16/jun', l:'Irak',    v:'Noruega' },
+      { f:'F2', d:'22/jun', l:'Francia', v:'Irak' },
+      { f:'F2', d:'22/jun', l:'Noruega', v:'Senegal' },
+      { f:'F3', d:'26/jun', l:'Noruega', v:'Francia' },
+      { f:'F3', d:'26/jun', l:'Senegal', v:'Irak' },
+    ]
+  },
+  { nombre: 'Grupo J', equipos: 'Argentina · Argelia · Austria · Jordania',
+    partidos: [
+      { f:'F1', d:'16/jun', l:'Argentina', v:'Argelia' },
+      { f:'F1', d:'16/jun', l:'Austria',   v:'Jordania' },
+      { f:'F2', d:'22/jun', l:'Argentina', v:'Austria' },
+      { f:'F2', d:'23/jun', l:'Jordania',  v:'Argelia' },
+      { f:'F3', d:'27/jun', l:'Argelia',   v:'Austria' },
+      { f:'F3', d:'27/jun', l:'Jordania',  v:'Argentina' },
+    ]
+  },
+  { nombre: 'Grupo K', equipos: 'Portugal · Congo DR · Uzbekistan · Colombia',
+    partidos: [
+      { f:'F1', d:'17/jun', l:'Portugal',   v:'Congo DR' },
+      { f:'F1', d:'17/jun', l:'Uzbekistan', v:'Colombia' },
+      { f:'F2', d:'23/jun', l:'Portugal',   v:'Uzbekistan' },
+      { f:'F2', d:'23/jun', l:'Congo DR',   v:'Colombia' },
+      { f:'F3', d:'28/jun', l:'Colombia',   v:'Portugal' },
+      { f:'F3', d:'28/jun', l:'Congo DR',   v:'Uzbekistan' },
+    ]
+  },
+  { nombre: 'Grupo L', equipos: 'Inglaterra · Croacia · Ghana · Panama',
+    partidos: [
+      { f:'F1', d:'17/jun', l:'Inglaterra', v:'Ghana' },
+      { f:'F1', d:'17/jun', l:'Croacia',    v:'Panama' },
+      { f:'F2', d:'23/jun', l:'Inglaterra', v:'Panama' },
+      { f:'F2', d:'23/jun', l:'Ghana',      v:'Croacia' },
+      { f:'F3', d:'27/jun', l:'Croacia',    v:'Inglaterra' },
+      { f:'F3', d:'27/jun', l:'Panama',     v:'Ghana' },
+    ]
+  },
+];
+
+// ─────────────────────────────────────────
+// RENDER
+// ─────────────────────────────────────────
+function renderGrupos() {
+  const cont = document.getElementById('grupos-container');
+  let html = '';
+
+  GRUPOS.forEach((grupo, gi) => {
+    html += `<div class="grupo-card">
+      <div class="grupo-header">
+        <div>
+          <div class="grupo-nombre">${grupo.nombre}</div>
+          <div class="grupo-equipos">${grupo.equipos}</div>
+        </div>
+        <div class="grupo-pts" id="pts-${gi}">0 / 18 pts</div>
+      </div>`;
+
+    let fechaActual = '';
+    grupo.partidos.forEach((p, pi) => {
+      if (p.f !== fechaActual) {
+        fechaActual = p.f;
+        html += `<div class="fecha-sep">${p.f} &mdash; ${p.d}</div>`;
+      }
+      const id = `g${gi}_p${pi}`;
+      html += `
+      <div class="partido">
+        <span class="equipo equipo-local">${p.l}</span>
+        <div class="marcador">
+          <input class="gol-input" type="number" min="0" max="99"
+            id="${id}_l" data-grupo="${gi}" data-partido="${pi}" data-side="l"
+            inputmode="numeric" pattern="[0-9]*" placeholder="–"
+            oninput="onGolInput(this)" onfocus="this.select()">
+          <span class="vs">VS</span>
+          <input class="gol-input" type="number" min="0" max="99"
+            id="${id}_v" data-grupo="${gi}" data-partido="${pi}" data-side="v"
+            inputmode="numeric" pattern="[0-9]*" placeholder="–"
+            oninput="onGolInput(this)" onfocus="this.select()">
+        </div>
+        <span class="equipo equipo-visita">${p.v}</span>
+      </div>`;
+    });
+
+    html += `</div>`;
+  });
+
+  cont.innerHTML = html;
+}
+
+// ─────────────────────────────────────────
+// ESTADO Y PROGRESO
+// ─────────────────────────────────────────
+function onGolInput(el) {
+  // Solo enteros >= 0
+  let val = el.value.replace(/[^0-9]/g, '');
+  if (val !== '') {
+    val = Math.max(0, parseInt(val)).toString();
+  }
+  el.value = val;
+  el.classList.toggle('filled', val !== '');
+  el.classList.remove('invalid');
+  updateProgress();
+}
+
+function updateProgress() {
+  const inputs = document.querySelectorAll('.gol-input');
+  let filled = 0;
+  inputs.forEach(i => { if (i.value !== '') filled++; });
+  const total = 144; // 72 partidos × 2
+  const partidos = Math.floor(filled / 2);
+  const pct = Math.round((filled / total) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `${partidos} / 72 partidos completados`;
+}
+
+// ─────────────────────────────────────────
+// VALIDACIÓN
+// ─────────────────────────────────────────
+function validar() {
+  let ok = true;
+
+  const nombre = document.getElementById('nombre');
+  const telefono = document.getElementById('telefono');
+
+  if (!nombre.value.trim()) {
+    nombre.classList.add('invalid');
+    ok = false;
+  } else nombre.classList.remove('invalid');
+
+  if (!telefono.value.trim()) {
+    telefono.classList.add('invalid');
+    ok = false;
+  } else telefono.classList.remove('invalid');
+
+  // Verificar todos los inputs de goles
+  const inputs = document.querySelectorAll('.gol-input');
+  inputs.forEach(inp => {
+    if (inp.value === '') {
+      inp.classList.add('invalid');
+      ok = false;
+    } else {
+      inp.classList.remove('invalid');
+    }
+  });
+
+  return ok;
+}
+
+// ─────────────────────────────────────────
+// ARMAR PAYLOAD
+// ─────────────────────────────────────────
+function armarPayload() {
+  const payload = {
+    nombre: document.getElementById('nombre').value.trim(),
+    telefono: document.getElementById('telefono').value.trim(),
+    timestamp: new Date().toISOString(),
+    partidos: []
+  };
+
+  GRUPOS.forEach((grupo, gi) => {
+    grupo.partidos.forEach((p, pi) => {
+      const gl = parseInt(document.getElementById(`g${gi}_p${pi}_l`).value);
+      const gv = parseInt(document.getElementById(`g${gi}_p${pi}_v`).value);
+      payload.partidos.push({
+        grupo: grupo.nombre,
+        fecha: p.f,
+        local: p.l,
+        visita: p.v,
+        goles_local: gl,
+        goles_visita: gv
+      });
+    });
+  });
+
+  return payload;
+}
+
+// ─────────────────────────────────────────
+// TOAST
+// ─────────────────────────────────────────
+function showToast(msg, tipo = 'error') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = tipo === 'success' ? 'show success' : 'show';
+  setTimeout(() => { t.className = ''; }, 3500);
+}
+
+// ─────────────────────────────────────────
+// ENVÍO
+// ─────────────────────────────────────────
+async function enviarProde() {
+  if (!validar()) {
+    // Scroll al primer campo inválido
+    const primer = document.querySelector('.invalid');
+    if (primer) primer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    showToast('Completá todos los campos antes de enviar');
+    return;
+  }
+
+  const btn = document.getElementById('btnEnviar');
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+
+  const payload = armarPayload();
+
+  try {
+    if (APPS_SCRIPT_URL === 'REEMPLAZAR_CON_URL_DEL_APPS_SCRIPT') {
+      // Modo demo: simular envío
+      await new Promise(r => setTimeout(r, 1500));
+      mostrarExito(payload.nombre);
+      return;
+    }
+
+    const resp = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    mostrarExito(payload.nombre);
+
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = 'Enviar pronósticos';
+    showToast('Error al enviar. Revisá tu conexión.');
+  }
+}
+
+function mostrarExito(nombre) {
+  document.getElementById('form-wrap').style.display = 'none';
+  const exito = document.getElementById('pantalla-exito');
+  exito.style.display = 'block';
+  exito.querySelector('p').innerHTML =
+    `<strong>${nombre}</strong>, tus pronósticos fueron registrados.<br>Buena suerte en el torneo.`;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ─────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────
+renderGrupos();
+updateProgress();
+</script>
+</body>
+</html>
