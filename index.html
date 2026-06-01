@@ -699,19 +699,12 @@ async function enviarProde() {
 
   try {
     if (APPS_SCRIPT_URL === 'REEMPLAZAR_CON_URL_DEL_APPS_SCRIPT') {
-      // Modo demo: simular envío
       await new Promise(r => setTimeout(r, 1500));
       mostrarExito(payload.nombre);
       return;
     }
 
-    const resp = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
+    await enviarViaIframe(payload);
     mostrarExito(payload.nombre);
 
   } catch (err) {
@@ -719,6 +712,55 @@ async function enviarProde() {
     btn.textContent = 'Enviar pronósticos';
     showToast('Error al enviar. Revisá tu conexión.');
   }
+}
+
+function enviarViaIframe(payload) {
+  return new Promise((resolve, reject) => {
+    // Crear iframe oculto que recibe la respuesta del Apps Script
+    const iframe = document.createElement('iframe');
+    iframe.name = 'hidden_iframe_' + Date.now();
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
+    // Crear form oculto que hace POST al Apps Script
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = APPS_SCRIPT_URL;
+    form.target = iframe.name;
+    form.style.display = 'none';
+
+    // Serializar el payload como campo oculto
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'payload';
+    input.value = JSON.stringify(payload);
+    form.appendChild(input);
+
+    document.body.appendChild(form);
+
+    // Cuando el iframe carga, el POST fue enviado
+    iframe.onload = () => {
+      setTimeout(() => {
+        document.body.removeChild(form);
+        document.body.removeChild(iframe);
+        resolve();
+      }, 500);
+    };
+
+    iframe.onerror = () => {
+      document.body.removeChild(form);
+      document.body.removeChild(iframe);
+      reject(new Error('Error de red'));
+    };
+
+    // Timeout de seguridad: 10 segundos
+    setTimeout(() => {
+      try { document.body.removeChild(form); document.body.removeChild(iframe); } catch(e) {}
+      resolve(); // resolvemos igual, el POST probablemente llegó
+    }, 10000);
+
+    form.submit();
+  });
 }
 
 function mostrarExito(nombre) {
