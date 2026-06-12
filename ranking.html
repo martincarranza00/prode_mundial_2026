@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prode Mundial 2026 — Ranking</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --azul:    #0B5394;
+    --azul2:   #1a6bb5;
+    --gold:    #f4c430;
+    --blanco:  #f8f8f2;
+    --gris:    #1e1e1e;
+    --gris2:   #2a2a2a;
+    --gris3:   #3d3d3d;
+    --oro:     #FFD700;
+    --plata:   #C0C0C0;
+    --bronce:  #CD7F32;
+    --verde:   #2d8a4e;
+    --amarillo:#d4a017;
+    --rojo:    #c0392b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--gris);
+    color: var(--blanco);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--azul);
+    padding: 20px 16px 16px;
+    text-align: center;
+    border-bottom: 3px solid var(--gold);
+  }
+  header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 2px;
+    color: var(--gold);
+    line-height: 1;
+  }
+  header p { font-size: 0.7rem; color: rgba(255,255,255,0.6); margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    background: var(--azul);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .tab {
+    flex: 1;
+    padding: 13px 8px;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.6);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+  .container { max-width: 640px; margin: 0 auto; padding: 16px; }
+
+  /* Toolbar */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    gap: 10px;
+  }
+  .last-update { font-size: 0.7rem; color: rgba(255,255,255,0.4); }
+  .btn-refresh {
+    background: var(--gold);
+    color: var(--gris);
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-refresh.visible { display: inline-flex; }
+  .btn-refresh:active { transform: scale(0.97); }
+  .btn-refresh:disabled { opacity: 0.5; cursor: wait; }
+
+  /* Loading */
+  .loading { text-align: center; padding: 60px 20px; color: rgba(255,255,255,0.5); }
+  .spinner {
+    width: 32px; height: 32px;
+    border: 3px solid rgba(255,255,255,0.15);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    margin: 0 auto 16px;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Pane visibility */
+  .pane { display: none; }
+  .pane.active { display: block; }
+
+  /* RANKING */
+  table.rank { width: 100%; border-collapse: collapse; background: var(--gris2); border-radius: 10px; overflow: hidden; }
+  table.rank th {
+    background: var(--azul);
+    color: var(--gold);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 10px 8px;
+    text-align: center;
+    font-weight: 600;
+  }
+  table.rank th:nth-child(2) { text-align: left; }
+  table.rank td { padding: 11px 8px; text-align: center; font-size: 0.9rem; border-bottom: 0.5px solid rgba(255,255,255,0.06); }
+  table.rank td:nth-child(2) { text-align: left; font-weight: 500; }
+  table.rank tr:last-child td { border-bottom: none; }
+  .pos-medal { font-size: 1.1rem; }
+  .total-cell { font-weight: 700; color: var(--gold); font-size: 1rem; }
+  tr.top1 td { background: rgba(255,215,0,0.12); }
+  tr.top2 td { background: rgba(192,192,192,0.1); }
+  tr.top3 td { background: rgba(205,127,50,0.1); }
+  .exactos-badge { font-size: 0.7rem; color: rgba(255,255,255,0.5); }
+
+  /* PREDICCIONES */
+  .selector-wrap { margin-bottom: 16px; }
+  .selector-wrap label { display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.8px; color: rgba(255,255,255,0.5); margin-bottom: 6px; }
+  select {
+    width: 100%;
+    background: var(--gris2);
+    border: 1.5px solid var(--gris3);
+    border-radius: 8px;
+    padding: 12px 14px;
+    color: var(--blanco);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    outline: none;
+  }
+  select:focus { border-color: var(--gold); }
+
+  .grupo-block { background: var(--gris2); border-radius: 10px; overflow: hidden; margin-bottom: 12px; }
+  .grupo-head { background: var(--azul); padding: 7px 14px; }
+  .grupo-head .gn { color: var(--gold); font-weight: 600; font-size: 0.8rem; letter-spacing: 1px; }
+  .match-row {
+    display: grid;
+    grid-template-columns: 30px 1fr auto 1fr;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-bottom: 0.5px solid rgba(255,255,255,0.05);
+    font-size: 0.85rem;
+  }
+  .match-row:last-child { border-bottom: none; }
+  .mr-fecha { font-size: 0.65rem; color: rgba(255,255,255,0.35); }
+  .mr-local { text-align: right; }
+  .mr-score { font-weight: 600; padding: 2px 8px; background: var(--gris); border-radius: 5px; white-space: nowrap; }
+  .mr-score.acierto-exacto { background: var(--verde); }
+  .mr-score.acierto-resultado { background: var(--amarillo); color: var(--gris); }
+  .mr-score.fallo { background: var(--gris3); }
+
+  /* RESULTADOS */
+  .res-row {
+    display: grid;
+    grid-template-columns: 30px 1fr auto 1fr;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-bottom: 0.5px solid rgba(255,255,255,0.05);
+    font-size: 0.85rem;
+  }
+  .res-row:last-child { border-bottom: none; }
+  .res-score { font-weight: 600; padding: 2px 8px; background: var(--azul2); border-radius: 5px; white-space: nowrap; }
+  .res-score.pendiente { background: var(--gris3); color: rgba(255,255,255,0.4); }
+
+  .empty { text-align: center; padding: 40px 20px; color: rgba(255,255,255,0.4); font-size: 0.9rem; }
+  .error-box { background: rgba(192,57,43,0.15); border: 1px solid var(--rojo); border-radius: 8px; padding: 16px; color: #ffb3ab; font-size: 0.85rem; text-align: center; }
+
+  .legend { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 14px; font-size: 0.7rem; color: rgba(255,255,255,0.5); }
+  .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .legend .dot { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🏆 Prode Mundial 2026</h1>
+  <p>Fase de Grupos · Ranking y Predicciones</p>
+</header>
+
+<div class="tabs">
+  <div class="tab active" data-pane="ranking" onclick="cambiarTab(this)">🏆 Ranking</div>
+  <div class="tab" data-pane="predicciones" onclick="cambiarTab(this)">🔮 Predicciones</div>
+  <div class="tab" data-pane="resultados" onclick="cambiarTab(this)">⚽ Resultados</div>
+</div>
+
+<div class="container">
+
+  <div class="toolbar">
+    <span class="last-update" id="lastUpdate">—</span>
+    <button class="btn-refresh" id="btnRefresh" onclick="cargarDatos()">↻ Actualizar</button>
+  </div>
+
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    Cargando datos del prode...
+  </div>
+
+  <!-- PANE RANKING -->
+  <div class="pane active" id="pane-ranking"></div>
+
+  <!-- PANE PREDICCIONES -->
+  <div class="pane" id="pane-predicciones"></div>
+
+  <!-- PANE RESULTADOS -->
+  <div class="pane" id="pane-resultados"></div>
+
+</div>
+
+<script>
+// ─────────────────────────────────────────
+// CONFIGURACIÓN
+// ─────────────────────────────────────────
+const API_URL = 'https://script.google.com/macros/s/AKfycby9g-j4qcKQ3dZTn3RNwFS5l-QezRw8_lBx8zj1lBagJoBukzbfvHTlq2-56HFfWp9RFQ/exec';
+
+let DATA = null;
+
+// Detectar modo admin (?admin=1 en la URL) para mostrar el botón refrescar
+const esAdmin = new URLSearchParams(window.location.search).get('admin') === '1';
+if (esAdmin) document.getElementById('btnRefresh').classList.add('visible');
+
+// ─────────────────────────────────────────
+// TABS
+// ─────────────────────────────────────────
+function cambiarTab(el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('pane-' + el.dataset.pane).classList.add('active');
+}
+
+// ─────────────────────────────────────────
+// CARGA DE DATOS
+// ─────────────────────────────────────────
+async function cargarDatos() {
+  const loading = document.getElementById('loading');
+  const btn = document.getElementById('btnRefresh');
+  loading.style.display = 'block';
+  btn.disabled = true;
+
+  try {
+    if (API_URL === 'REEMPLAZAR_CON_URL_DEL_APPS_SCRIPT_LECTURA') {
+      throw new Error('Falta configurar la URL del Apps Script de lectura.');
+    }
+
+    const resp = await fetch(API_URL);
+    const json = await resp.json();
+    if (!json.ok) throw new Error(json.error || 'Error desconocido');
+
+    DATA = json;
+    document.getElementById('lastUpdate').textContent =
+      'Actualizado: ' + new Date(json.actualizado).toLocaleString('es-AR');
+
+    renderRanking();
+    renderSelectorPredicciones();
+    renderResultados();
+
+  } catch (err) {
+    document.getElementById('pane-ranking').innerHTML =
+      `<div class="error-box">No se pudieron cargar los datos.<br>${err.message}</div>`;
+  } finally {
+    loading.style.display = 'none';
+    btn.disabled = false;
+  }
+}
+
+// ─────────────────────────────────────────
+// RANKING
+// ─────────────────────────────────────────
+function renderRanking() {
+  const cont = document.getElementById('pane-ranking');
+  if (!DATA.ranking || DATA.ranking.length === 0) {
+    cont.innerHTML = '<div class="empty">Todavía no hay participantes en el ranking.</div>';
+    return;
+  }
+  const medallas = { 1: '🥇', 2: '🥈', 3: '🥉' };
+  let rows = '';
+  DATA.ranking.forEach(p => {
+    const cls = p.posicion === 1 ? 'top1' : p.posicion === 2 ? 'top2' : p.posicion === 3 ? 'top3' : '';
+    const medalla = medallas[p.posicion] || p.posicion;
+    rows += `<tr class="${cls}">
+      <td><span class="pos-medal">${medalla}</span></td>
+      <td>${p.nombre}</td>
+      <td class="total-cell">${p.total}</td>
+      <td><span class="exactos-badge">${p.exactos} ✓✓</span></td>
+    </tr>`;
+  });
+  cont.innerHTML = `
+    <table class="rank">
+      <thead><tr><th>#</th><th>Participante</th><th>Pts</th><th>Exactos</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="legend">
+      <span><span class="dot" style="background:var(--gold)"></span> Pts = puntaje total</span>
+      <span>✓✓ = resultados exactos</span>
+    </div>`;
+}
+
+// ─────────────────────────────────────────
+// PREDICCIONES
+// ─────────────────────────────────────────
+function renderSelectorPredicciones() {
+  const cont = document.getElementById('pane-predicciones');
+  if (!DATA.predicciones || DATA.predicciones.participantes.length === 0) {
+    cont.innerHTML = '<div class="empty">Todavía no hay predicciones cargadas.</div>';
+    return;
+  }
+  const opts = DATA.predicciones.participantes
+    .map((p, i) => `<option value="${i}">${p.nombre}</option>`).join('');
+  cont.innerHTML = `
+    <div class="selector-wrap">
+      <label>Elegí un participante</label>
+      <select id="selPart" onchange="renderPrediccionDe(this.value)">
+        <option value="">— Seleccionar —</option>
+        ${opts}
+      </select>
+    </div>
+    <div id="predContent"></div>`;
+}
+
+function renderPrediccionDe(idx) {
+  const cont = document.getElementById('predContent');
+  if (idx === '') { cont.innerHTML = ''; return; }
+  const part = DATA.predicciones.participantes[idx];
+
+  // Mapa de resultados reales para comparar
+  const realMap = {};
+  (DATA.resultados || []).forEach(r => {
+    realMap[`${r.grupo}|${r.fecha}|${r.local}|${r.visita}`] = r;
+  });
+
+  // Agrupar predicciones por grupo
+  const grupos = {};
+  part.predicciones.forEach(p => {
+    if (!grupos[p.grupo]) grupos[p.grupo] = [];
+    grupos[p.grupo].push(p);
+  });
+
+  let html = '';
+  Object.keys(grupos).forEach(g => {
+    let rows = '';
+    grupos[g].forEach(p => {
+      const real = realMap[`${p.grupo}|${p.fecha}|${p.local}|${p.visita}`];
+      let scoreCls = '';
+      if (real && real.jugado) {
+        if (p.gl == real.gl && p.gv == real.gv) scoreCls = 'acierto-exacto';
+        else if (Math.sign(p.gl - p.gv) === Math.sign(real.gl - real.gv)) scoreCls = 'acierto-resultado';
+        else scoreCls = 'fallo';
+      }
+      rows += `<div class="match-row">
+        <span class="mr-fecha">${p.fecha}</span>
+        <span class="mr-local">${p.local}</span>
+        <span class="mr-score ${scoreCls}">${p.gl} - ${p.gv}</span>
+        <span>${p.visita}</span>
+      </div>`;
+    });
+    html += `<div class="grupo-block">
+      <div class="grupo-head"><span class="gn">${g}</span></div>
+      ${rows}
+    </div>`;
+  });
+
+  html += `<div class="legend">
+    <span><span class="dot" style="background:var(--verde)"></span> Exacto (3pts)</span>
+    <span><span class="dot" style="background:var(--amarillo)"></span> Resultado (1pt)</span>
+    <span><span class="dot" style="background:var(--gris3)"></span> Fallo (0pts)</span>
+  </div>`;
+
+  cont.innerHTML = html;
+}
+
+// ─────────────────────────────────────────
+// RESULTADOS
+// ─────────────────────────────────────────
+function renderResultados() {
+  const cont = document.getElementById('pane-resultados');
+  if (!DATA.resultados || DATA.resultados.length === 0) {
+    cont.innerHTML = '<div class="empty">Todavía no hay resultados cargados.</div>';
+    return;
+  }
+  const grupos = {};
+  DATA.resultados.forEach(r => {
+    if (!grupos[r.grupo]) grupos[r.grupo] = [];
+    grupos[r.grupo].push(r);
+  });
+
+  let html = '';
+  Object.keys(grupos).forEach(g => {
+    let rows = '';
+    grupos[g].forEach(r => {
+      const score = r.jugado
+        ? `<span class="res-score">${r.gl} - ${r.gv}</span>`
+        : `<span class="res-score pendiente">— : —</span>`;
+      rows += `<div class="res-row">
+        <span class="mr-fecha">${r.fecha}</span>
+        <span class="mr-local">${r.local}</span>
+        ${score}
+        <span>${r.visita}</span>
+      </div>`;
+    });
+    html += `<div class="grupo-block">
+      <div class="grupo-head"><span class="gn">${g}</span></div>
+      ${rows}
+    </div>`;
+  });
+  cont.innerHTML = html;
+}
+
+// ─────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────
+cargarDatos();
+</script>
+</body>
+</html>
